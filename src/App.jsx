@@ -1,8 +1,15 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [tasks, setTasks] = useState([])
+  const [tasks, setTasks] = useState(() => {
+    try {
+      const stored = localStorage.getItem('tasks')
+      return stored ? JSON.parse(stored) : []
+    } catch {
+      return []
+    }
+  })
   const [input, setInput] = useState('')
   const inputRef = useRef(null)
 
@@ -37,6 +44,13 @@ function App() {
       inputRef.current?.focus()
     }, 1000)
   }
+
+  // persist tasks whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('tasks', JSON.stringify(tasks))
+    } catch {}
+  }, [tasks])
 
   return (
     <div className="app" onClick={handlePageClick}>
